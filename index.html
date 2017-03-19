@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+	<meta charset="UTF-8">
+	<title>react-01</title>
+</head>
+<body>
+	<div id="content"></div>
+	<script type ="text/babel">
+	var data = [
+		{id:1,author:'Y',text:'喵~'},
+		{id:2,author:'C',text:'乖~'}
+	];
+		//外壳
+		var CommentBox = React.createClass({
+			render:function(){
+				return(
+					<div className="commentBox">我是评论外框
+						<CommentList data={this.props.data}/>
+						<CommentForm/>
+					</div>
+				) 
+			}
+		});
+		//列表
+		var CommentList = React.createClass({
+			render:function(){
+				var CommentNode =this.props.data.map(function(comment){
+					return(
+						<Comment key={comment.id} author={comment.author}>{comment.text}</Comment>
+					);
+				});
+				return(
+					<ul className="commentList">我是评论列表
+						{CommentNode}
+					</ul>
+				) 
+			}
+		});
+		//列表项
+		var Comment = React.createClass({
+			render:function(){
+				return(
+					<li className="comment">
+						<span>{this.props.author}</span>:{this.props.children}
+					</li>
+				) 
+			}
+		});
+		//表单
+		var CommentForm = React.createClass({
+			render:function(){
+				return(
+					<div className="commentForm">我是评论表单</div>
+				) 
+			}
+		});
+		//将创建的元素插入DOM中
+		ReactDOM.render(
+			<CommentBox data = {data}/>,
+			document.getElementById('content')
+		);
+	</script>
+</body>
+</html>
