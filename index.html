@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+		<script src="http://yslp.qq.com/js/core/jquery.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+
 	<meta charset="UTF-8">
 	<title>react-01</title>
 </head>
@@ -16,15 +18,38 @@
 	];
 		//外壳
 		var CommentBox = React.createClass({
+			//参数1：初始化状态
+			getInitialState:function(){
+				return{data:[]}
+			},
+			//参数2
+			componentDidMount:function(){
+				//或者bind(this)，綁定this改變作用域
+				var that = this;
+				$.ajax({url:'commentList.json', dataType:'json',success:function(r){
+					that.setState({data:eval(r)});
+					}
+				});
+			},
+			//参数3
+			confirm:function(comment){
+				$.ajax({url:'commentList.json', data:comment,dataType:'json',type:'post',success:function(){
+					var newscomment = this.state.data.concat([comment]);
+					console.log(newscomment);
+					this.setState({data:newscomment});
+					// this.setState({})
+					}.bind(this)
+				});
+			},
 			render:function(){
 				return(
-					<div className="commentBox">我是评论外框
-						<CommentList data={this.props.data}/>
-						<CommentForm/>
+					<div className="commentBox" >我是评论外框
+						<CommentList data={this.state.data}/>
+						<CommentForm commentSubmit={this.confirm}/>
 					</div>
 				) 
 			}
-		});
+		}); 
 		//列表
 		var CommentList = React.createClass({
 			render:function(){
@@ -52,15 +77,30 @@
 		});
 		//表单
 		var CommentForm = React.createClass({
+			confirm:function(e){
+				e.preventDefault();
+				var authorVal = this.refs.author.value.trim(); 
+				var textVal = this.refs.text.value.trim(); 
+				this.props.commentSubmit({
+					author:authorVal,
+					text:textVal
+				});
+			},
 			render:function(){
 				return(
-					<div className="commentForm">我是评论表单</div>
+					<div className="commentForm">
+						<form onSubmit={this.confirm}>
+							<input type='text' ref='author' placeholder='请输入姓名'/>
+							<input type='text' ref='text' placeholder='请输入留言'/>
+							<input type='submit' value='提交'/>
+						</form>
+					</div>
 				) 
 			}
 		});
 		//将创建的元素插入DOM中
 		ReactDOM.render(
-			<CommentBox data = {data}/>,
+			<CommentBox/>,
 			document.getElementById('content')
 		);
 	</script>
