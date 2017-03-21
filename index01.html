@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+		<script src="http://yslp.qq.com/js/core/jquery.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+	<meta charset="UTF-8">
+	<title>react-01</title>
+</head>
+<body>
+	<div id="content"></div>
+	<script type="text/babel">
+		//外框
+		var CommentBox = React.createClass({
+			//数据初始化
+			getInitialState:function(){
+				return{data:[]}
+			},
+			//数据/ajax
+			componentDidMount:function(){
+				this.setState({data:[
+						{author:'you',text:'can not take my eye of you ~'},
+						{author:'I',text:'⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄'}
+				]})
+			},
+			//数据流提交至此触发数据改变
+			submit:function(comment){
+				var newarr =this.state.data.concat(comment);
+				this.setState({data:newarr})
+			},
+			//渲染留言板
+			render:function(){
+				return(
+					<div className = "commentBox">外框
+						<CommentList data={this.state.data}/>
+						<CommentForm commentSubmit={this.submit}/>
+					</div>
+				);
+			}
+		});
+		//留言列表
+		var CommentList = React.createClass({
+			render:function(){
+				//遍历数据，将内容填入Comment，数据流终点
+				var CommentNode = this.props.data.map(function(e){
+					return(
+						<Comment author={e.author}>{e.text}</Comment>
+						)
+					});
+				return(
+					<div className="commentList">列表
+						<ul className = "comment">
+							{CommentNode}
+						</ul>
+					</div>
+				);
+			}
+		});
+		//留言条
+		var Comment = React.createClass({
+			render:function(){
+				return(
+					<li className="commentAuthor">
+					{this.props.author}：{this.props.children}
+					</li>
+				)
+			}
+		});
+		//表单
+		var CommentForm = React.createClass({
+			confirm:function(e){
+				//阻止提交时页面刷新
+				e.preventDefault();
+				//数据流开始
+				this.props.commentSubmit({
+					author:this.refs.author.value,
+					text:this.refs.text.value
+				});
+				this.refs.author.value = "";
+				this.refs.text.value = "";
+			},
+			render:function(){
+				return(
+					<div className="commentForm">
+						<form onSubmit={this.confirm} >
+							<input type="text"  placeholder="请输入姓名" ref="author"/>
+							<input type="text" placeholder="请输入内容" ref="text"/>
+							<input type="submit" value="确定"/>
+						</form>
+					</div>
+				)
+			}, 
+		});
+		ReactDOM.render(
+			<CommentBox/>,
+			document.getElementById('content')
+		);
+	</script>			
+</body>
+</html>
