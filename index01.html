@@ -29,11 +29,17 @@
 				var newarr =this.state.data.concat(comment);
 				this.setState({data:newarr})
 			},
+			Commentclick:function(index){
+				var data = this.state.data;
+				data.splice(index,1);
+				console.log(data)
+				this.setState({data:data});
+			},
 			//渲染留言板
 			render:function(){
 				return(
 					<div className = "commentBox">外框
-						<CommentList data={this.state.data}/>
+						<CommentList data={this.state.data} commentclick={this.Commentclick}/>
 						<CommentForm commentSubmit={this.submit}/>
 					</div>
 				);
@@ -41,13 +47,20 @@
 		});
 		//留言列表
 		var CommentList = React.createClass({
+			clclick:function(index){
+
+						this.props.commentclick(index);
+			},
 			render:function(){
-				//遍历数据，将内容填入Comment，数据流终点
-				var CommentNode = this.props.data.map(function(e){
+
+				var that = this;
+				function _aaa(e,index){
 					return(
-						<Comment author={e.author}>{e.text}</Comment>
+						<Comment author={e.author} cclick= {that.clclick} index={index}>{e.text}</Comment>
 						)
-					});
+				}
+				//遍历数据，将内容填入Comment，数据流终点
+				var CommentNode = this.props.data.map(_aaa);
 				return(
 					<div className="commentList">列表
 						<ul className = "comment">
@@ -59,9 +72,16 @@
 		});
 		//留言条
 		var Comment = React.createClass({
+			click:function(){
+				console.log(this.props.index)
+					this.props.cclick({
+						index:this.props.index
+					})
+
+			},
 			render:function(){
 				return(
-					<li className="commentAuthor">
+					<li className="commentAuthor" onClick ={this.click}>
 					{this.props.author}：{this.props.children}
 					</li>
 				)
